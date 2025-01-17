@@ -1,10 +1,12 @@
 #!/bin/bash
 
+REGION=eu-north-1
+
 if [[ -z "$1" ]]
 then
     BASE_URL="http://localhost:3000"
 else
-    BASE_URL="https://${1}.execute-api.eu-north-1.amazonaws.com/dev"
+    BASE_URL="https://${1}.execute-api.${REGION}.amazonaws.com/dev"
 fi
 
 function testCrulRest() {

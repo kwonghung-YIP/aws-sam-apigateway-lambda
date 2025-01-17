@@ -11,26 +11,26 @@
     "accountId": "123456789012",
     "stage": "dev",
     "identity": {
-      "apiKey": None,
-      "userArn": None,
-      "cognitoAuthenticationType": None,
-      "caller": None,
+      "apiKey": null,
+      "userArn": null,
+      "cognitoAuthenticationType": null,
+      "caller": null,
       "userAgent": "Custom User Agent String",
-      "user": None,
-      "cognitoIdentityPoolId": None,
-      "cognitoAuthenticationProvider": None,
+      "user": null,
+      "cognitoIdentityPoolId": null,
+      "cognitoAuthenticationProvider": null,
       "sourceIp": "127.0.0.1",
-      "accountId": None
+      "accountId": null
     },
-    "extendedRequestId": None,
+    "extendedRequestId": null,
     "path": "/customer/",
     "protocol": "HTTP/1.1",
     "domainName": "localhost: 3000",
     "requestTimeEpoch": 1737118745,
     "requestTime": "17/Jan/2025: 12: 59: 05 +0000"
   },
-  "queryStringParameters": None,
-  "multiValueQueryStringParameters": None,
+  "queryStringParameters": {},
+  "multiValueQueryStringParameters": {},
   "headers": {
     "Host": "localhost: 3000",
     "Authorization": "Basic YWRtaW46cGFzc3dk",
@@ -67,8 +67,8 @@
       "3000"
     ]
   },
-  "pathParameters": None,
-  "stageVariables": None,
+  "pathParameters": {},
+  "stageVariables": {},
   "path": "/customer/",
-  "isBase64Encoded": False
+  "isBase64Encoded": false
 }
