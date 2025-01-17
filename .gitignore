@@ -1,0 +1,6 @@
+**/target
+**/.aws-sam
+**/.vscode
+localstack/.aws
+localstack/cloudformation/out.yml
+**/dependency-reduced-pom.xml

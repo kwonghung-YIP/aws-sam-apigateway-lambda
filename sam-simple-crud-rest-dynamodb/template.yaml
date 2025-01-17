@@ -1,0 +1,191 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  A CRUD REST implementation with API Gateway, Lambda, and DynamoDB
+
+Parameters:
+  StageParam:
+    Description: Target Stage for the Api Gateway
+    Type: String
+    Default: dev
+    AllowedValues:
+      - dev
+      - uat
+      - prd
+
+
+# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
+Globals:
+  Function:
+    CodeUri: plain-java-crud-rest
+    Runtime: java21
+    Architectures:
+      - x86_64
+    Timeout: 20
+    MemorySize: 512
+
+Resources:
+  CustomerTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: "id"
+          AttributeType: "S"
+      KeySchema:
+        - AttributeName: "id"
+          KeyType: "HASH"
+
+  CustomerRestApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: !Sub "${StageParam}"
+      Auth:
+        DefaultAuthorizer: BasicAuthTokenAuthorizer
+        Authorizers:
+          BasicAuthTokenAuthorizer:
+            FunctionPayloadType: TOKEN
+            FunctionArn: !GetAtt BasicAuthTokenAuthorizerFunction.Arn
+            Identity:
+              Header: Authorization
+              ValidationExpression: Basic.*
+
+  BasicAuthTokenAuthorizerFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: org.hung.aws.lambda.function.authorizer.BasicAuthTokenAuthorizer::handleRequest
+      #AWS Lambda defined runtime environment variables: https://docs.aws.amazon.com/lambda/latest/dg/configuration-envvars.html
+      Environment:
+        Variables:
+          AWS_ACCOUNTID: !Sub ${AWS::AccountId}
+          #APIGW_ID: !Ref CustomerRestApi
+          APIGW_STAGE: !Ref StageParam
+      LoggingConfig:
+        LogGroup: !Ref CustomerRestLogGroup
+        LogFormat: Text
+
+  CreateCustomerFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      Handler: org.hung.aws.lambda.function.customer.CreateCustomerFunction::handleRequest
+      Events:
+        CreateCustomer:
+          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            RestApiId: !Ref CustomerRestApi
+            Path: /customer/
+            Method: post
+      #AWS CloudFormation Pseudo parameters reference https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/pseudo-parameter-reference.html
+      Environment:
+        Variables:
+          CUSTOMER_TABLE: !Ref CustomerTable
+      Policies:
+      # AWS SAM Predefined Policy Template: https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-policy-template-list.html#dynamo-db-crud-policy
+        - DynamoDBCrudPolicy:
+            TableName: !Ref CustomerTable
+      LoggingConfig:
+        LogGroup: !Ref CustomerRestLogGroup
+        LogFormat: Text
+
+  ReadCustomerFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      Handler: org.hung.aws.lambda.function.customer.ReadCustomerFunction::handleRequest
+      Events:
+        ReadCustomer:
+          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            RestApiId: !Ref CustomerRestApi
+            Path: /customer/{id}
+            Method: get
+            RequestParameters:
+              - method.request.path.id:
+                  Required: true
+      Environment:
+        Variables:      
+          CUSTOMER_TABLE: !Ref CustomerTable
+      Policies:
+      #AWS SAM predefined Policy Template: https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-policy-template-list.html#dynamo-db-read-policy
+        - DynamoDBReadPolicy:
+            TableName: !Ref CustomerTable
+      LoggingConfig:
+        LogGroup: !Ref CustomerRestLogGroup
+        LogFormat: Text
+
+  UpdateCustomerFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      Handler: org.hung.aws.lambda.function.customer.UpdateCustomerFunction::handleRequest
+      Events:
+        ReadCustomer:
+          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            RestApiId: !Ref CustomerRestApi
+            Path: /customer/{id}
+            Method: put
+      Environment:
+        Variables:
+          CUSTOMER_TABLE: !Ref CustomerTable
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref CustomerTable
+      LoggingConfig:
+        LogGroup: !Ref CustomerRestLogGroup
+        LogFormat: Text            
+
+  DeleteCustomerFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      Handler: org.hung.aws.lambda.function.customer.DeleteCustomerFunction::handleRequest
+      Events:
+        ReadCustomer:
+          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            RestApiId: !Ref CustomerRestApi
+            Path: /customer/{id}
+            Method: delete
+      Environment:
+        Variables:
+          CUSTOMER_TABLE: !Ref CustomerTable
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref CustomerTable
+      LoggingConfig:
+        LogGroup: !Ref CustomerRestLogGroup
+        LogFormat: Text
+
+  CustomerRestLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub "/aws/lambda/${AWS::StackName}-lambda-log-group"
+      LogGroupClass: STANDARD 
+      RetentionInDays: 1
+
+Outputs:
+  CustomerTable:
+    Description: "DynamoDB Customer Table Arn"
+    Value: !GetAtt CustomerTable.Arn
+
+  CustomerRestApiURL:
+    Description: "API Gateway endpoint URL"
+    #CloudFormation Fn::Sub function reference: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference-sub.html
+    Value: !Sub 
+      - https://${ApiId}.execute-api.${AWS::Region}.amazonaws.com/${StageParam}/customer/
+      - ApiId: !Ref CustomerRestApi
+
+  CreateCustomerFunction:
+    Description: "Create Customer Lambda Function ARN"
+    Value: !GetAtt CreateCustomerFunction.Arn
+  ReadCustomerFunction:
+    Description: "Read Customer Lambda Function ARN"
+    Value: !GetAtt ReadCustomerFunction.Arn
+  UpdateCustomerFunction:
+    Description: "Update Customer Lambda Function ARN"
+    Value: !GetAtt UpdateCustomerFunction.Arn
+  DeleteCustomerFunction:
+    Description: "Delete Customer Lambda Function ARN"
+    Value: !GetAtt DeleteCustomerFunction.Arn
+
+  ReadCustomerFunctionIamRole:
+    Description: "Implicit IAM Role for Read Customer Function"
+    Value: !GetAtt ReadCustomerFunctionRole.Arn
