@@ -1,0 +1,11 @@
+{
+    "statusCode": 404,
+    "headers": {
+        "Content-Type": "application/json"
+    },
+    "multiValueHeaders": null,
+    "body": "{\"error\":\"Not Found\",\"message\":\"Cannot find entity by Id:d0250f70-bb60-4b99-9427-59e2b7697d63\"}",
+    "isBase64Encoded": null
+}
+
+

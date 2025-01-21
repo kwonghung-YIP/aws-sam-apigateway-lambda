@@ -1,0 +1,9 @@
+{
+    "statusCode": 400,
+    "headers": {
+        "Content-Type": "application/json"
+    },
+    "multiValueHeaders": null,
+    "body": "{\"error\":\"Bad Request\",\"message\":\"Request body validation error\"}",
+    "isBase64Encoded": null
+}

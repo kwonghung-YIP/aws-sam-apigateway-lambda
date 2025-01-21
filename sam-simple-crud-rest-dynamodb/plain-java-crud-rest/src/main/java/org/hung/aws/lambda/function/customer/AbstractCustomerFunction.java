@@ -29,7 +29,11 @@ public abstract class AbstractCustomerFunction extends AbstractLambdaCrudFunctio
     @Override
     protected String getTableName() {
         String tableName = System.getenv("CUSTOMER_TABLE");
-        return tableName!=null?tableName:"customer";
+        if (tableName==null) {
+            tableName = System.getProperty("customer.table");
+        }
+        System.out.println("Tablename:"+tableName);
+        return tableName;
     }
 
     @Override

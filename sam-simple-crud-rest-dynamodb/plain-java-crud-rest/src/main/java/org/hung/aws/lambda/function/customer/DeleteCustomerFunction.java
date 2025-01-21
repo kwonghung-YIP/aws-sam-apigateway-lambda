@@ -10,13 +10,14 @@ import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import com.amazonaws.services.lambda.runtime.logging.LogLevel;
 
-public class DeleteCustomerFunction extends AbstractCustomerFunction{
+public class DeleteCustomerFunction extends AbstractCustomerFunction {
 
     @Override
-    protected void handleAPIGatewayProxyEvent(APIGatewayProxyRequestEvent request, APIGatewayProxyResponseEvent response,
+    protected void handleAPIGatewayProxyEvent(APIGatewayProxyRequestEvent request,
+            APIGatewayProxyResponseEvent response,
             Context context) {
 
-                        try {
+        try {
             UUID id = extractIdParam(request);
 
             Customer oldEntity = findEntity(id);
@@ -28,6 +29,5 @@ public class DeleteCustomerFunction extends AbstractCustomerFunction{
                     .withBody(error(e.getTitle(), e.getMessage()));
         }
     }
-
 
 }

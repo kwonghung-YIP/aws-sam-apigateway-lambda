@@ -5,7 +5,7 @@ import static org.hamcrest.Matchers.equalTo;
 
 import java.util.UUID;
 
-import org.hung.aws.lambda.function.customer.ReadCustomerFunction;
+import org.hung.aws.lambda.function.customer.UpdateCustomerFunction;
 import org.hung.aws.lambda.model.Customer;
 import org.json.JSONException;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,25 +18,24 @@ import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent
 import com.amazonaws.services.lambda.runtime.tests.annotations.Events;
 import com.amazonaws.services.lambda.runtime.tests.annotations.HandlerParams;
 import com.amazonaws.services.lambda.runtime.tests.annotations.Responses;
-import com.fasterxml.jackson.core.JsonProcessingException;
 
-public class ReadCustomerFunctionTest extends AbstractCustomerFunctionTest {
+public class UpdateCustomerFunctionTest extends AbstractCustomerFunctionTest {
 
-    private ReadCustomerFunction testee;
+    private UpdateCustomerFunction testee;
 
     @BeforeEach
     public void functionSetup() {
-        this.testee = new ReadCustomerFunction();
+        this.testee = new UpdateCustomerFunction();
     }
 
     @ParameterizedTest
     @HandlerParams(
-        events = @Events(folder = "events/ReadCustomerFunctionTest/request/", type = APIGatewayProxyRequestEvent.class), 
-        responses = @Responses(folder = "events/ReadCustomerFunctionTest/response/", type = APIGatewayProxyResponseEvent.class))
-    void handleRequestTest(APIGatewayProxyRequestEvent request, APIGatewayProxyResponseEvent expected) throws JsonProcessingException, JSONException {
-
+        events = @Events(folder = "events/UpdateCustomerFunctionTest/request/", type = APIGatewayProxyRequestEvent.class), 
+        responses = @Responses(folder = "events/UpdateCustomerFunctionTest/response/", type = APIGatewayProxyResponseEvent.class))
+    void handleRequestTest(APIGatewayProxyRequestEvent request, APIGatewayProxyResponseEvent expected) throws JSONException {
+        
         Customer entity = new Customer();
-        entity.setId(UUID.fromString("c7a9d792-d518-45d5-9d8e-c13f2b2a86e2"));
+        entity.setId(UUID.fromString("da78c07c-290b-4842-a1e0-a40fa692f043"));
         entity.setFirstName("John");
         entity.setLastName("Doe");
         entity.setEmail("john.doe@gmail.com");
@@ -47,9 +46,6 @@ public class ReadCustomerFunctionTest extends AbstractCustomerFunctionTest {
 
         assertThat(actual.getStatusCode(), equalTo(expected.getStatusCode()));
 
-        JSONAssert.assertEquals(mapper.writeValueAsString(expected.getBody()),
-            mapper.writeValueAsString(actual.getBody()),
-            JSONCompareMode.LENIENT);
+        JSONAssert.assertEquals(expected.getBody(),actual.getBody(),JSONCompareMode.LENIENT);
     }
-
 }

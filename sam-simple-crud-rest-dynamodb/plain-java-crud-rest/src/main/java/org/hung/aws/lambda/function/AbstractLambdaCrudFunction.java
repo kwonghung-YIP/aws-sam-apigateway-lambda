@@ -105,9 +105,7 @@ public abstract class AbstractLambdaCrudFunction<T, K> implements DynamoDBLambda
     }
 
     public String error(String error, String message) {
-        return String.format("""
-                {"error":"%s","message":"%s"}
-                """, error, message);
+        return String.format("{\"error\":\"%s\",\"message\":\"%s\"}", error, message);
     }
 
 }

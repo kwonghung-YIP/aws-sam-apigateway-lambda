@@ -1,0 +1,66 @@
+{
+    "httpMethod": "POST",
+    "body": "{\"firstName\": \"John\",\"lastName\": \"Doe\"}",
+    "resource": "/customer/",
+    "requestContext": {
+        "resourceId": "123456",
+        "apiId": "1234567890",
+        "resourcePath": "/customer/",
+        "httpMethod": "GET",
+        "requestId": "1c4b4f20-db0b-4fcd-a737-5e62f7c00a49",
+        "accountId": "123456789012",
+        "stage": "dev",
+        "identity": {
+            "apiKey": null,
+            "userArn": null,
+            "cognitoAuthenticationType": null,
+            "caller": null,
+            "userAgent": "Custom User Agent String",
+            "user": null,
+            "cognitoIdentityPoolId": null,
+            "cognitoAuthenticationProvider": null,
+            "sourceIp": "127.0.0.1",
+            "accountId": null
+        },
+        "extendedRequestId": null,
+        "path": "/customer/",
+        "protocol": "HTTP/1.1",
+        "domainName": "localhost: 3000",
+        "requestTimeEpoch": 1737339457,
+        "requestTime": "20/Jan/2025:02:17:37 +0000"
+    },
+    "queryStringParameters": null,
+    "multiValueQueryStringParameters": null,
+    "headers": {
+        "Host": "localhost:3000",
+        "Authorization": "Basic dXNlcjpwYXNzd2Q=",
+        "User-Agent": "curl/8.5.0",
+        "Accept": "*/*",
+        "X-Forwarded-Proto": "http",
+        "X-Forwarded-Port": "3000"
+    },
+    "multiValueHeaders": {
+        "Host": [
+            "localhost:3000"
+        ],
+        "Authorization": [
+            "Basic dXNlcjpwYXNzd2Q="
+        ],
+        "User-Agent": [
+            "curl/8.5.0"
+        ],
+        "Accept": [
+            "*/*"
+        ],
+        "X-Forwarded-Proto": [
+            "http"
+        ],
+        "X-Forwarded-Port": [
+            "3000"
+        ]
+    },
+    "pathParameters": null,
+    "stageVariables": null,
+    "path": "/customer/",
+    "isBase64Encoded": false
+}

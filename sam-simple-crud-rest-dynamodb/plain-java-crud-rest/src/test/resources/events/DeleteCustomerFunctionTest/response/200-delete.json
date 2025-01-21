@@ -1,0 +1,9 @@
+{
+    "statusCode": 200,
+    "headers": {
+        "Content-Type": "application/json"
+    },
+    "multiValueHeaders": null,
+    "body": "{\"id\":\"9910f7b8-b557-4611-bdcd-b99f33e5e3c7\",\"firstName\":\"John\",\"lastName\":\"Doe\",\"email\":\"john.doe@gmail.com\"}",
+    "isBase64Encoded": null
+}

@@ -17,9 +17,10 @@ public interface DynamoDBLambdaHandler<T> extends DefaultAWSConfigure {
             .credentialsProvider(DefaultCredentialsProvider.create())
             .httpClient(UrlConnectionHttpClient.create());
 
-        System.out.println("isSamLocal:"+isSamLocal());
-        if (isSamLocal()) {
-            builder.endpointOverride(URI.create("http://localstack-main:4566"));
+        String useLocalEndpoint = getLocalEndpoint();
+        System.out.println("localEndpoint:"+useLocalEndpoint);
+        if (useLocalEndpoint!=null) {
+            builder.endpointOverride(URI.create(useLocalEndpoint));
         } else {
             builder.region(getDefaultRegion());
         }

@@ -147,3 +147,4 @@ sam local invoke CreateCustomerFunction --profile localstack \
 - [SAM - AWS SAM Policy template list](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-policy-template-list.html)
 - [Building Lambda with Java](https://docs.aws.amazon.com/lambda/latest/dg/lambda-java.html)
 - [Run local AWS SAM - Environment Variable File](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-using-start-api.html)
+- [GitHub - aws-java-lambda-test project](https://github.com/aws/aws-lambda-java-libs/tree/main/aws-lambda-java-tests)
