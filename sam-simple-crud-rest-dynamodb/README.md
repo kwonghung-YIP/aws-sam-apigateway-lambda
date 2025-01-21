@@ -149,3 +149,4 @@ sam local invoke CreateCustomerFunction --profile localstack \
 - [Run local AWS SAM - Environment Variable File](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-using-start-api.html)
 - [GitHub - aws-java-lambda-test project](https://github.com/aws/aws-lambda-java-libs/tree/main/aws-lambda-java-tests)
 - [AWS Java SDK 2.0:Environment variables and System properties](https://docs.aws.amazon.com/sdk-for-java/latest/developer-guide/migration-env-and-system-props.html)
+- [DigitalOcean - Resolving conflicts in maven dependency tree](https://www.digitalocean.com/community/tutorials/maven-dependency-tree-resolving-conflicts)
