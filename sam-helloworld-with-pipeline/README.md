@@ -3,22 +3,23 @@ Deploy/Delete the pipeline stack with aws cloudformation cli
 ```bash
 aws cloudformation deploy \
     --profile cloudformation-execution-role \
-    --template-file first-pipeline.yaml \
-    --stack-name github-lambda-pipeline
+    --template-file codepipeline-stack.yaml \
+    --stack-name sam-helloworld-pipeline \
+    --role-arn arn:aws:iam::796973491384:role/pipeline-stack-cloudformation-execution-role
 
 aws cloudformation delete-stack \
     --profile cloudformation-execution-role \
-    --stack-name github-lambda-pipeline
+    --stack-name sam-helloworld-pipeline
 ```
 
 Deploy/Delete the pipeline stack with sam cli
 
 ```bash
-sam deploy -t first-pipeline.yaml \
+sam deploy -t codepipeline-stack.yaml \
     --profile cloudformation-deployment \
     --stack-name sam-helloworld-pipeline \
     --role-arn arn:aws:iam::796973491384:role/pipeline-stack-cloudformation-execution-role \
-    --capabilities=CAPABILITY_IAM
+    --capabilities=CAPABILITY_IAM --debug
 
 sam delete \
     --profile cloudformation-deployment \

@@ -147,7 +147,7 @@ Resources:
                 ActionMode: CHANGE_SET_REPLACE #CREATE_UPDATE|REPLACE_ON_FAILURE|DELETE_ONLY|CHANGE_SET_REPLACE|CHANGE_SET_EXECUTE
                 StackName: !Ref AWS::StackName
                 ChangeSetName: !Sub ${AWS::StackName}-ChangeSet
-                TemplatePath: GitHubSourceZip::codepipeline-template.yaml
+                TemplatePath: GitHubSourceZip::sam-helloworld-with-pipeline/pipeline/codepipeline-stack.yaml
                 #
                 # The ARN of the IAM service role that performs the declared action. This is assumed through the roleArn for the pipeline.
                 # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-codepipeline-pipeline-actiondeclaration.html#cfn-codepipeline-pipeline-actiondeclaration-rolearn
