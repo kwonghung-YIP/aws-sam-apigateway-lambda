@@ -1,0 +1,160 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: >
+  First CloudFormation template for CodePipeline
+
+Parameters:
+  GitHubRepo:
+    Type: String
+    Default: "kwonghung-YIP/aws-sam-apigateway-lambda"
+  GitHubSourceBranch:
+    Type: String
+    Default: "main"
+  PipelineStackCloudFormationExecutionRole:
+    Type: String
+    Default: "arn:aws:iam::796973491384:role/pipeline-stack-cloudformation-execution-role"
+
+Resources:
+  GitHubCodeStarConnection:
+    Type: AWS::CodeStarConnections::Connection
+    Properties:
+      ConnectionName: GitHubConnection
+      ProviderType: GitHub
+
+  PipelineArtifactsBucket:
+    Type: AWS::S3::Bucket
+    # Bucket cannot be deleted if it is not empty
+    UpdateReplacePolicy: Retain
+    DeletionPolicy: Retain
+    Properties:
+      VersioningConfiguration:
+        Status: Enabled
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+
+  # Resources skipped from sam pipeline template
+  # artifactsBucketPolicy
+  # artifactsLoggingBucket
+  # artifcatsLoggingBucketPolicy
+
+  PipelineDefaultRole:
+    Type: AWS::IAM::Role
+    Properties:
+      Description: >
+        IAM Role for CodePipeline to use to either perform actions with no actionRoleArn, 
+        or to use to assume roles for actions with an actionRoleArn. Assign to 
+        "AWS::CodePipeline::Pipeline" "RoleArn" property
+
+        Reference:
+        https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-codepipeline-pipeline.html#cfn-codepipeline-pipeline-rolearn
+      
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Action:
+              - "sts:AssumeRole"
+            Principal:
+              Service:
+                - codepipeline.amazonaws.com
+      Policies:
+        - PolicyName: codestarconnections
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - "codestar-connections:UseConnection"
+                Resource: !Ref GitHubCodeStarConnection
+        - PolicyName: artifactsbucket
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - "s3:PutObject"
+                  - "s3:GetObject"
+                  - "s3:GetObjectVersion"
+                Resource: 
+                  Fn::Sub: ${PipelineArtifactsBucket.Arn}/*
+        - PolicyName: cloudformation
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - "cloudformation:DescribeStacks"
+                  - "cloudformation:DescribeChangeSet"
+                Resource:
+                  - !Sub "arn:${AWS::Partition}:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/${AWS::StackName}/*"
+
+
+  Pipeline:
+    Type: AWS::CodePipeline::Pipeline
+    Properties:
+      ArtifactStore:
+        Location: !Ref PipelineArtifactsBucket
+        Type: S3
+      #
+      # The Amazon Resource Name (ARN) for CodePipeline to use to either perform actions with no actionRoleArn, or to use to assume roles for actions with an actionRoleArn.
+      # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-codepipeline-pipeline.html#cfn-codepipeline-pipeline-rolearn
+      #
+      RoleArn: !GetAtt PipelineDefaultRole.Arn
+      # Indicates whether to rerun the CodePipeline pipeline after you update it.
+      RestartExecutionOnUpdate: false
+      Stages:
+        - Name: Source
+          Actions:
+            - Name: clone-from-github-repo
+              ActionTypeId:
+                Category: Source # Source|Build|Test|Deploy|Invoke|Approval|Compute
+                Owner: AWS # AWS|ThridParty|Custom
+                #
+                # Valid action providers in CodePipeline
+                # https://docs.aws.amazon.com/codepipeline/latest/userguide/actions-valid-providers.html
+                #
+                Provider: CodeStarSourceConnection
+                Version: "1"
+              #
+              # Action Provider: CodeStarSourceConnetion for GitHub
+              # https://docs.aws.amazon.com/codepipeline/latest/userguide/action-reference-CodestarConnectionSource.html
+              #
+              Configuration:
+                ConnectionArn: !Ref GitHubCodeStarConnection
+                FullRepositoryId: !Ref GitHubRepo
+                BranchName: !Ref GitHubSourceBranch
+                OutputArtifactFormat: CODE_ZIP #CODE_ZIP|CODEBUILD_CLONE_REF
+              #
+              # Valid input and output artifacts for each action type
+              # https://docs.aws.amazon.com/codepipeline/latest/userguide/reference-action-artifacts.html
+              #
+              OutputArtifacts:
+                - Name: GitHubSourceZip
+        - Name: UpdatePipelineStack
+          Actions:
+            - Name: create-changeset
+              ActionTypeId:
+                Category: Deploy
+                Owner: AWS
+                Provider: CloudFormation
+                Version: "1"
+              #
+              # AWS CloudFormation deploy action reference
+              # https://docs.aws.amazon.com/codepipeline/latest/userguide/action-reference-CloudFormation.html
+              #
+              Configuration:
+                ActionMode: CHANGE_SET_REPLACE #CREATE_UPDATE|REPLACE_ON_FAILURE|DELETE_ONLY|CHANGE_SET_REPLACE|CHANGE_SET_EXECUTE
+                StackName: !Ref AWS::StackName
+                ChangeSetName: !Sub ${AWS::StackName}-ChangeSet
+                TemplatePath: GitHubSourceZip::codepipeline-template.yaml
+                #
+                # The ARN of the IAM service role that performs the declared action. This is assumed through the roleArn for the pipeline.
+                # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-codepipeline-pipeline-actiondeclaration.html#cfn-codepipeline-pipeline-actiondeclaration-rolearn
+                #
+                RoleArn: !Ref PipelineStackCloudFormationExecutionRole
+                Capabilities: CAPABILITY_NAMED_IAM
+              InputArtifacts:
+                - Name: GitHubSourceZip
+              RunOrder: 1
+              
