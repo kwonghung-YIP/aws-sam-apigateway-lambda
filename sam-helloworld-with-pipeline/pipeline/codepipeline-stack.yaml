@@ -3,6 +3,9 @@ Description: >
   First CloudFormation template for CodePipeline
 
 Parameters:
+  GitHubConnectionArn:
+    Type: String
+    Default: "arn:aws:codeconnections:eu-north-1:796973491384:connection/1b0b695e-3d55-463e-a46e-5e7586e4cdc0"
   GitHubRepo:
     Type: String
     Default: "kwonghung-YIP/aws-sam-apigateway-lambda"
@@ -13,8 +16,12 @@ Parameters:
     Type: String
     Default: "arn:aws:iam::796973491384:role/pipeline-stack-cloudformation-execution-role"
 
+Conditions:
+  CreateGitHubConnection: !Equals [!Ref GitHubConnectionArn, ""]
+
 Resources:
   GitHubCodeStarConnection:
+    Condition: CreateGitHubConnection
     Type: AWS::CodeStarConnections::Connection
     Properties:
       ConnectionName: GitHubConnection
@@ -66,7 +73,7 @@ Resources:
               - Effect: Allow
                 Action:
                   - "codestar-connections:UseConnection"
-                Resource: !Ref GitHubCodeStarConnection
+                Resource: !If [CreateGitHubConnection, !Ref GitHubCodeStarConnection, !Ref GitHubConnectionArn]
         - PolicyName: artifactsbucket
           PolicyDocument:
             Version: "2012-10-17"
@@ -131,7 +138,7 @@ Resources:
               # https://docs.aws.amazon.com/codepipeline/latest/userguide/action-reference-CodestarConnectionSource.html
               #
               Configuration:
-                ConnectionArn: !Ref GitHubCodeStarConnection
+                ConnectionArn: !If [CreateGitHubConnection, !Ref GitHubCodeStarConnection, !Ref GitHubConnectionArn]
                 FullRepositoryId: !Ref GitHubRepo
                 BranchName: !Ref GitHubSourceBranch
                 OutputArtifactFormat: CODE_ZIP #CODE_ZIP|CODEBUILD_CLONE_REF
