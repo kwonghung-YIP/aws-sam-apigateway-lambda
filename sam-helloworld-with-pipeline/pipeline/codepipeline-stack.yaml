@@ -97,7 +97,7 @@ Resources:
                   - "cloudformation:ExecuteChangeSet"
                 Resource:
                   - !Sub "arn:${AWS::Partition}:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/${AWS::StackName}/*"
-        - PolicyName: iamRole
+        - PolicyName: iamrole
           PolicyDocument:
             Version: "2012-10-17"
             Statement:
@@ -106,6 +106,16 @@ Resources:
                   - "iam:PassRole"
                 Resource: 
                   - !Sub "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/*"
+        - PolicyName: codebuild
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - "codebuild:StartBuild"
+                  - "codebuild:BatchGetBuilds"
+                Resource:
+                  - !GetAtt CodeBuildProjectRunAllToSaveCost.Arn
 
   Pipeline:
     Type: AWS::CodePipeline::Pipeline
@@ -216,8 +226,31 @@ Resources:
               - "sts:AssumeRole"
             Principal:
               Service:
-                - codebuild.amazonaws.com    
-    
+                - codebuild.amazonaws.com
+      Policies:
+        - PolicyNamne: cloudwatchlogs
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - "logs:CreateLogStream"
+                  - "logs:CreateLogGroup"
+                  - "logs:PutLogEvents"
+                Resource:
+                  - !Sub "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/codebuild/*"
+        - PolicyName: artifactbucket
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - "s3:GetObject"
+                  - "s3:GetObjectVersion"
+                  - "s3:PutObject"
+                Resource:
+                  - !Sub "arn:${AWS::Partition}:s3:::${PipelineArtifactsBucket}/*"
+
   CodeBuildProjectRunAllToSaveCost:
     #
     # AWS::CodeBuild::Project Configuration Reference
@@ -244,7 +277,7 @@ Resources:
         # BITBUCKET | CODECOMMIT | CODEPIPELINE | GITHUB | GITHUB_ENTERPRISE
         # GITLAB | GITLAB_SELF_MANAGED | NO_SOURCE | S3
         Type: CODEPIPELINE
-        #BuildSpec: buildspec/1-step-for-all.yml
+        BuildSpec: sam-helloworld-with-pipeline/pipeline/buildspec/1-step-for-all.yml
 
 
               
