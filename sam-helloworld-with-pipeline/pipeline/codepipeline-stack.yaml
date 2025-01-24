@@ -141,6 +141,7 @@ Resources:
               #
               OutputArtifacts:
                 - Name: GitHubSourceZip
+        
         - Name: UpdatePipelineStack
           Actions:
             - Name: create-changeset
@@ -174,10 +175,71 @@ Resources:
                 Provider: CloudFormation
                 Version: "1"
               Configuration:
-                ActionMode: CHAGNE_SET_EXECUTE
+                ActionMode: CHANGE_SET_EXECUTE
                 StackName: !Ref AWS::StackName
                 ChangeSetName: !Sub ${AWS::StackName}-ChangeSet
+                OutputFileName: execute-stack-output.json
               OutputArtifacts:
                 - Name: !Sub ${AWS::StackName}ChangeSet
               RunOrder: 2
+
+        - Name: Build
+          Actions:
+            - Name: sam-build
+              ActionTypeId:
+                Category: Build
+                Owner: AWS
+                Provider: CodeBuild
+                Version: "1"
+              Configuration:
+                ProjectName:
+              InputArtifacts:
+                - Name: GitHubSourceZip
+              OutputArtifacts:
+                - Name AppBuildArtifactZip
+
+    CodeBuildServiceRole:
+      Type: AWS::IAM::Role
+      Properties:
+        AssumeRolePolicyDocument:
+          Version: "2012-10-17"
+          Statement:
+            - Effect: Allow
+              Action:
+                - "sts:AssumeRole"
+              Principal:
+                Service:
+                  - codebuild.amasonaws.com
+    
+    
+    
+    CodeBuildProjectRunAllToSaveCost:
+      #
+      # AWS::CodeBuild::Project Configuration Reference
+      # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-codebuild-project.html
+      #
+      Type: AWS::CodeBuild::Project
+      Properties:
+        Description: >
+          Run all SAM tasks in a single step for free tier
+        Artifacts:
+          Type: CODEPIPELINE # CODEPIPELINE|S3|NO_ARTIFACTS
+        Environment:
+          Type: LINUX_CONTAINER
+          ComputeType: BUILD_GENERAL1_SMALL
+          #
+          # Docker Images provided by Code Build
+          # https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-available.html
+          #
+          Image: aws/codebuild/amazonlinux-x86_64-standard:5.0
+          # Enable running Docker daemon in a Docker container
+          PrivilegedMode: true
+          ServiceRole: !GetAtt CodeBuildServiceRole.Arn
+          Source:
+            # BITBUCKET | CODECOMMIT | CODEPIPELINE | GITHUB | GITHUB_ENTERPRISE
+            # GITLAB | GITLAB_SELF_MANAGED | NO_SOURCE | S3
+            Type: NO_SOURCE
+            BuildSpec: buildspec/1-step-for-all.yml
+
+
               
