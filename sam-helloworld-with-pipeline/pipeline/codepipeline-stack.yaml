@@ -196,7 +196,7 @@ Resources:
               InputArtifacts:
                 - Name: GitHubSourceZip
               OutputArtifacts:
-                - Name AppBuildArtifactZip
+                - Name: AppBuildArtifactZip
 
   CodeBuildServiceRole:
     Type: AWS::IAM::Role
@@ -236,8 +236,8 @@ Resources:
       Source:
         # BITBUCKET | CODECOMMIT | CODEPIPELINE | GITHUB | GITHUB_ENTERPRISE
         # GITLAB | GITLAB_SELF_MANAGED | NO_SOURCE | S3
-        Type: NO_SOURCE
-        BuildSpec: buildspec/1-step-for-all.yml
+        Type: CODEPIPELINE
+        #BuildSpec: buildspec/1-step-for-all.yml
 
 
               

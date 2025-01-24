@@ -5,4 +5,4 @@ phases:
       python: 3.12
       java: corretto21
     commands:
-      java -version
+      - java -version
