@@ -6,3 +6,5 @@ phases:
       java: corretto21
     commands:
       - java -version
+      - pwd
+      - aws --version
