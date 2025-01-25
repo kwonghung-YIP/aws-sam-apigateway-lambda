@@ -8,3 +8,6 @@ phases:
       - java -version
       - pwd
       - aws --version
+      - sam --version
+      - cd sam-helloword-with-pipeline
+      - mvn --version
