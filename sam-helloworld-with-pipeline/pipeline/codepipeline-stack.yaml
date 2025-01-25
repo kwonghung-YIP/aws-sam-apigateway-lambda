@@ -95,6 +95,7 @@ Resources:
                   - "cloudformation:DescribeChangeSet"
                   - "cloudformation:CreateChangeSet"
                   - "cloudformation:ExecuteChangeSet"
+                  - "cloudformation:DeleteChangeSet"
                 Resource:
                   - !Sub "arn:${AWS::Partition}:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/${AWS::StackName}/*"
         - PolicyName: iamrole
