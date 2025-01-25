@@ -22,7 +22,7 @@ phases:
       - pwd
       #- ls -la
       - cd sam-helloworld-with-pipeline
-      - >-
-        sam build --use-container
-          --template ${APP_TEMPLATE}
+      - |
+        sam build --use-container \
+          --template ${APP_TEMPLATE} \
           --config-file ${APP_CONFIG_FILE}
