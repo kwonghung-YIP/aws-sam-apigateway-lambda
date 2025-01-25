@@ -13,16 +13,16 @@ phases:
       - mvn --version      
       - aws --version
       - sam --version
-      - docker version
+      #- docker version
       # Enable docker https://docs.aws.amazon.com/codebuild/latest/userguide/sample-docker-custom-image.html
       - nohup /usr/local/bin/dockerd --host=unix:///var/run/docker.sock --host=tcp://127.0.0.1:2375 --storage-driver=overlay2 &
       - timeout 15 sh -c "until docker info; do echo .; sleep 1; done"
   build:
     commands:
       - pwd
-      - ls -la
+      #- ls -la
       - cd sam-helloworld-with-pipeline
-      - >
-        sam build --use-container 
-          --template ${APP_TEMPLATE} 
+      - >-
+        sam build --use-container
+          --template ${APP_TEMPLATE}
           --config-file ${APP_CONFIG_FILE}

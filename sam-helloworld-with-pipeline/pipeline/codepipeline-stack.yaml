@@ -278,6 +278,10 @@ Resources:
             Value: template.yaml
           - Name: APP_CONFIG_FILE
             Value: samconfig.toml
+          - Name: APP_STACK_NAME
+            Value: sam-hello-world
+          - Name: CLOUDFORMATION_EXEC_ROLE
+            Value: ""
       ServiceRole: !GetAtt CodeBuildServiceRole.Arn
       Source:
         # BITBUCKET | CODECOMMIT | CODEPIPELINE | GITHUB | GITHUB_ENTERPRISE
