@@ -1,13 +1,19 @@
+#
+# CodeBuild buildspec reference
+# https://docs.aws.amazon.com/codebuild/latest/userguide/build-spec-ref.html
+#
 version: 0.2
 phases:
   install:
     runtime-versions:
-      python: 3.12
+      #python: 3.12
       java: corretto21
     commands:
       - java -version
+      - mvn --version      
       - aws --version
       - sam --version
+      - docker version
       # Enable docker https://docs.aws.amazon.com/codebuild/latest/userguide/sample-docker-custom-image.html
       - nohup /usr/local/bin/dockerd --host=unix:///var/run/docker.sock --host=tcp://127.0.0.1:2375 --storage-driver=overlay2 &
       - timeout 15 sh -c "until docker info; do echo .; sleep 1; done"
@@ -16,4 +22,6 @@ phases:
       - pwd
       - ls -la
       - cd sam-helloworld-with-pipeline
-      - mvn --version
+      - sam build --use-container \
+          --template ${APP_TEMPLATE} \
+          --config-file ${APP_CONFIG_FILE}
