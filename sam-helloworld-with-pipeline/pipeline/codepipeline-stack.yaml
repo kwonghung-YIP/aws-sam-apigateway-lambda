@@ -280,8 +280,10 @@ Resources:
             Value: samconfig.toml
           - Name: APP_STACK_NAME
             Value: sam-hello-world
+          - Name: PIPELINE_EXEC_ROLE
+            Value: !GetAtt HelloworldPipelineExecRole.Arn
           - Name: CLOUDFORMATION_EXEC_ROLE
-            Value: ""
+            Value: !GetAtt HelloworldCloudFormationExecRole.Arn
       ServiceRole: !GetAtt CodeBuildServiceRole.Arn
       Source:
         # BITBUCKET | CODECOMMIT | CODEPIPELINE | GITHUB | GITHUB_ENTERPRISE
@@ -289,5 +291,30 @@ Resources:
         Type: CODEPIPELINE
         BuildSpec: sam-helloworld-with-pipeline/pipeline/buildspec/1-step-for-all.yml
 
+  HelloworldPipelineExecRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Action:
+              - "sts:AssumeRole"
+            Principal:
+              Service:
+                - codebuild.amazonaws.com
+
+  HelloworldCloudFormationExecRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Action:
+              - "sts:AssumeRole"
+            Principal:
+              Service:
+                - codepipeline.amazonaws.com
 
               

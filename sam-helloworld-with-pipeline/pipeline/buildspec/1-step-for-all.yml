@@ -22,7 +22,11 @@ phases:
       - pwd
       #- ls -la
       - cd sam-helloworld-with-pipeline
-      - |
-        sam build --use-container \
-          --template ${APP_TEMPLATE} \
+      - sam build --use-container
+          --template ${APP_TEMPLATE}
           --config-file ${APP_CONFIG_FILE}
+      - pipeline/assume-role.sh ${PIPELINE_EXEC_ROLE} feature-deploy
+      - sam deploy --stack-name ${APP_STACK_NAME}
+          --capabilities CAPABILITY_IAM
+          --no-fail-on-empty-changeset
+          --role-arn ${CLOUDFORMATION_EXEC_ROLE}
