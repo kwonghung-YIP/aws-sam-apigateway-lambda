@@ -6,8 +6,14 @@ phases:
       java: corretto21
     commands:
       - java -version
-      - pwd
       - aws --version
       - sam --version
-      - cd sam-helloword-with-pipeline
+      # Enable docker https://docs.aws.amazon.com/codebuild/latest/userguide/sample-docker-custom-image.html
+      - nohup /usr/local/bin/dockerd --host=unix:///var/run/docker.sock --host=tcp://127.0.0.1:2375 --storage-driver=overlay2 &
+      - timeout 15 sh -c "until docker info; do echo .; sleep 1; done"
+  build:
+    commands:
+      - pwd
+      - ls -la
+      - cd sam-helloworld-with-pipeline
       - mvn --version
