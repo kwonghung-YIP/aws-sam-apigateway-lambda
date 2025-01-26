@@ -332,8 +332,8 @@ Resources:
                   - "cloudformation:GetTemplateSummary"
                   - "cloudformation:GetTemplate"
                 Resource:
-                  - !Sub "arn:${AWS::Partition}:cloudformation:${AWS::Partition}:${AWS::AccountId}:stack/*"
-                  - !Sub "arn:${AWS::Partition}:cloudformation:${AWS::Partition}:aws:transform/*" 
+                  - !Sub "arn:${AWS::Partition}:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/*"
+                  - !Sub "arn:${AWS::Partition}:cloudformation:${AWS::Region}:aws:transform/*"
 
               - Effect: Allow
                 Action:
@@ -349,8 +349,14 @@ Resources:
                   - "s3:CreateBucket"
                   - "s3:DeleteBucket"
                   - "s3:PutObject"
+                  - "s3:GetObject"
                   - "s3:PutBucketTagging"
                   - "s3:PutEncryptionConfiguration"
+                  - "s3:PutBucketVersioning"
+                  - "s3:PutBucketPublicAccessBlock"
+                  - "s3:PutBucketPolicy"
+                  - "s3:DeleteBucketPolicy"
+                  - "s3:GetBucketPolicy"
                 Resource:
                   - "arn:aws:s3:::*"
 
@@ -365,6 +371,25 @@ Resources:
               - "sts:AssumeRole"
             Principal:
               Service:
-                - codepipeline.amazonaws.com
+                - !GetAtt HelloworldPipelineExecRole.Arn
+      Policies:
+        - PolicyName: cloudformation
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - "cloudformation:CreateStack"
+                  - "cloudformation:DeleteStack"
+                  - "cloudformation:DescribeStacks"
+                  - "cloudformation:CreateChangeSet"
+                  - "cloudformation:ExecuteChangeSet"
+                  - "cloudformation:DeleteChangeSet"
+                  - "cloudformation:DescribeChangeSet"
+                  - "cloudformation:DescribeStackEvents"
+                  - "cloudformation:GetTemplateSummary"
+                  - "cloudformation:GetTemplate"
+                Resource:
+                  - !Sub "arn:${AWS::Partition}:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/*"
 
               
