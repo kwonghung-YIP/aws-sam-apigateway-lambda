@@ -370,7 +370,7 @@ Resources:
             Action:
               - "sts:AssumeRole"
             Principal:
-              Service:
+              AWS:
                 - !GetAtt HelloworldPipelineExecRole.Arn
       Policies:
         - PolicyName: cloudformation
