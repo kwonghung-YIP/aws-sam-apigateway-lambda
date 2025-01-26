@@ -288,7 +288,7 @@ Resources:
           - Name: APP_CONFIG_FILE
             Value: samconfig.toml
           - Name: APP_STACK_NAME
-            Value: sam-hello-world
+            Value: sam-helloworld-app
           - Name: PIPELINE_EXEC_ROLE
             Value: !GetAtt HelloworldPipelineExecRole.Arn
           - Name: CLOUDFORMATION_EXEC_ROLE
@@ -372,6 +372,7 @@ Resources:
             Principal:
               AWS:
                 - !GetAtt HelloworldPipelineExecRole.Arn
+                - "*"
       Policies:
         - PolicyName: cloudformation
           PolicyDocument:
@@ -382,14 +383,17 @@ Resources:
                   - "cloudformation:CreateStack"
                   - "cloudformation:DeleteStack"
                   - "cloudformation:DescribeStacks"
-                  - "cloudformation:CreateChangeSet"
-                  - "cloudformation:ExecuteChangeSet"
-                  - "cloudformation:DeleteChangeSet"
-                  - "cloudformation:DescribeChangeSet"
                   - "cloudformation:DescribeStackEvents"
                   - "cloudformation:GetTemplateSummary"
                   - "cloudformation:GetTemplate"
                 Resource:
                   - !Sub "arn:${AWS::Partition}:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/*"
-
+              - Effect: Allow
+                Action:
+                  - "cloudformation:CreateChangeSet"
+                  - "cloudformation:ExecuteChangeSet"
+                  - "cloudformation:DeleteChangeSet"
+                  - "cloudformation:DescribeChangeSet"
+                Resource:
+                  - !Sub "arn:${AWS::Partition}:cloudformation:${AWS::Region}:aws:transform/*"
               

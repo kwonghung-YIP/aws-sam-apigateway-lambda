@@ -23,6 +23,14 @@ sam deploy -t codepipeline-stack.yaml \
 
 sam delete \
     --profile cloudformation-deployment \
+    --stack-name sam-helloword-app
+
+sam delete \
+    --profile cloudformation-deployment \
+    --stack-name aws-sam-cli-managed-default
+
+sam delete \
+    --profile cloudformation-deployment \
     --stack-name sam-helloworld-pipeline
 ```
 

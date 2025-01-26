@@ -28,6 +28,7 @@ phases:
       - . pipeline/assume-role.sh ${PIPELINE_EXEC_ROLE} feature-deploy
       - sam deploy --stack-name ${APP_STACK_NAME}
           --capabilities CAPABILITY_IAM
+          --no-confirm-changeset
           --no-fail-on-empty-changeset
           --role-arn ${CLOUDFORMATION_EXEC_ROLE}
           --debug
