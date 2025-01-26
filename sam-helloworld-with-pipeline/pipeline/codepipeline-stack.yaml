@@ -332,12 +332,27 @@ Resources:
                   - "cloudformation:GetTemplateSummary"
                   - "cloudformation:GetTemplate"
                 Resource:
-                  - !Sub "arn:${AWS::Partition}:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/*"
+                  - !Sub "arn:${AWS::Partition}:cloudformation:${AWS::Partition}:${AWS::AccountId}:stack/*"
+                  - !Sub "arn:${AWS::Partition}:cloudformation:${AWS::Partition}:aws:transform/*" 
+
               - Effect: Allow
                 Action:
                   - "iam:PassRole"
                 Resource:
                   - !Sub "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/*"
+        - PolicyName: s3Bucket
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - "s3:CreateBucket"
+                  - "s3:DeleteBucket"
+                  - "s3:PutObject"
+                  - "s3:PutBucketTagging"
+                  - "s3:PutEncryptionConfiguration"
+                Resource:
+                  - "arn:aws:s3:::*"
 
   HelloworldCloudFormationExecRole:
     Type: AWS::IAM::Role
