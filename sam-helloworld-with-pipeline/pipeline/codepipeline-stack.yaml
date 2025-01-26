@@ -259,7 +259,7 @@ Resources:
                 Action:
                   - "sts:AssumeRole"
                 Resource:
-                  - !GetAtt HelloworldPipelineExecRole.Arn
+                  - !Sub "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/*"
 
   CodeBuildProjectRunAllToSaveCost:
     #
