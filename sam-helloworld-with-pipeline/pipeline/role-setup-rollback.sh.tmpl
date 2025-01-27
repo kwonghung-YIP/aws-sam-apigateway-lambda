@@ -8,8 +8,6 @@ POLICY_ARN_2="%PIPELINE_STACK_CLOUDFORMATION_EXECUTION_POLICY_ARN%"
 
 INSTANCE_ARN="arn:aws:sso:::instance/ssoins-6508049c7c8773e1"
 
-POLICY_NAME="cloudformation-deployment2"
-
 AWS_ACCOUNT_ID="796973491384"
 
 SSO_USER_PRINCIPAL_ID="a07c599c-c041-700d-0209-f965861b8678"
@@ -43,6 +41,8 @@ aws sso-admin list-account-assignments-for-principal \
     --principal-type "USER" \
     --no-cli-pager
 
+sleep 30s
+
 aws sso-admin delete-permission-set \
     --permission-set-arn "${PERMISSION_SET_ARN}" \
     --instance-arn "${INSTANCE_ARN}"
@@ -51,11 +51,10 @@ aws iam delete-policy \
     --policy-arn "${POLICY_ARN_1}"
 
 ROLE_NAME="pipeline-stack-cloudformation-execution-role2"
-POLICY_NAME="POLICY_NAME="pipeline-stack-cloudformation-execution-policy2"
 
-aws iam delete-role-policy \
+aws iam detach-role-policy \
     --role-name ${ROLE_NAME} \
-    --policy-name ${POLICY_NAME}
+    --policy-arn ${POLICY_ARN_2}
 
 aws iam delete-role \
     --role-name "${ROLE_NAME}"
