@@ -396,4 +396,57 @@ Resources:
                   - "cloudformation:DescribeChangeSet"
                 Resource:
                   - !Sub "arn:${AWS::Partition}:cloudformation:${AWS::Region}:aws:transform/*"
-              
+        - PolicyName: iamrole
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - "iam:CreateRole"
+                  - "iam:UpdateRole"
+                  - "iam:DeleteRole"
+                  - "iam:GetRole"
+                  - "iam:TagRole"
+                  - "iam:PassRole"
+                  - "iam:AttachRolePolicy"
+                  - "iam:DetachRolePolicy"
+                Resource:
+                  - !Sub "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/*"
+        - PolicyName: lambda
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - "lambda:CreateFunction"
+                  - "lambda:DeleteFunction"
+                  - "lambda:GetFunction"
+                  - "lambda:TagResource"
+                  - "lambda:AddPermission"
+                  - "lambda:RemovePermission"
+                Resource:
+                  - !Sub "arn:${AWS::Partition}:lambda:${AWS::Region}:${AWS::AccountId}:function:*"
+        - PolicyName: s3bucket
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - "s3:GetObject"
+                Resource:
+                  - !Sub "arn:${AWS::Partition}:s3:::*/*"
+        - PolicyName: apigwrestapi
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - "apigateway:GET"
+                  - "apigateway:POST"
+                  - "apigateway:PUT"
+                  - "apigateway:PATCH"
+                  - "apigateway:DELETE"
+                Resource:
+                  - !Sub "arn:${AWS::Partition}:apigateway:${AWS::Region}::/restapis"
+                  - !Sub "arn:${AWS::Partition}:apigateway:${AWS::Region}::/restapis/*"
+
