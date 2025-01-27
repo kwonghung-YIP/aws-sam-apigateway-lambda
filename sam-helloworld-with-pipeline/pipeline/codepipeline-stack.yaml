@@ -1,6 +1,6 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Description: >
-  First CloudFormation template for CodePipeline
+  CodePipeline CloudFormation template to deploy SAM CLI Helloworld exmaple
 
 Parameters:
   GitHubConnectionArn:

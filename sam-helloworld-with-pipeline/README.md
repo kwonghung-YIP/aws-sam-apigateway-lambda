@@ -1,3 +1,17 @@
+```bash
+aws iam create-role \
+    --role-name cloudformation-deployment2 \
+    --description "IAM Role for deploying pipeline stack" \
+    --assume-role-policy-document file://cloudformation-deployment-role-assume-doc.json \
+    --output json
+
+aws iam create-policy \
+    --policy-name cloudformation-deployment2 \
+    --description "IAM Policy for deploying pipeline stack" \
+    --policy-document file://cloudformation-deployment-policy.json \
+    --output text --query "Policy.Arn"
+```
+
 Deploy/Delete the pipeline stack with aws cloudformation cli
 
 ```bash
@@ -23,15 +37,18 @@ sam deploy -t codepipeline-stack.yaml \
 
 sam delete \
     --profile cloudformation-deployment \
-    --stack-name sam-helloword-app
+    --stack-name sam-helloworld-app \
+    --no-prompts
 
 sam delete \
     --profile cloudformation-deployment \
-    --stack-name aws-sam-cli-managed-default
+    --stack-name aws-sam-cli-managed-default \
+    --no-prompts
 
 sam delete \
     --profile cloudformation-deployment \
-    --stack-name sam-helloworld-pipeline
+    --stack-name sam-helloworld-pipeline \
+    --no-prompts
 ```
 
 References
