@@ -4,3 +4,5 @@
 localstack/.aws
 localstack/cloudformation/out.yml
 **/dependency-reduced-pom.xml
+
+role-setup-rollback.sh

@@ -1,0 +1,64 @@
+#!/bin/bash
+
+PERMISSION_SET_ARN="%CLOUDFORMATION_DEPLOYMENT_PERMISSION_SET_ARN%"
+
+POLICY_ARN_1="%CLOUDFORMATION_DEPLOYMENT_POLICY_ARN%"
+
+POLICY_ARN_2="%PIPELINE_STACK_CLOUDFORMATION_EXECUTION_POLICY_ARN%"
+
+INSTANCE_ARN="arn:aws:sso:::instance/ssoins-6508049c7c8773e1"
+
+POLICY_NAME="cloudformation-deployment2"
+
+AWS_ACCOUNT_ID="796973491384"
+
+SSO_USER_PRINCIPAL_ID="a07c599c-c041-700d-0209-f965861b8678"
+
+REQUEST_ID=`aws sso-admin delete-account-assignment \
+    --instance-arn "${INSTANCE_ARN}" \
+    --permission-set-arn "${PERMISSION_SET_ARN}" \
+    --principal-id "${SSO_USER_PRINCIPAL_ID}" \
+    --principal-type "USER" \
+    --target-id "${AWS_ACCOUNT_ID}" \
+    --target-type "AWS_ACCOUNT" \
+    --output text --query="AccountAssignmentDeletionStatus.RequestId" \
+    --no-cli-pager`
+
+STATUS="IN_PROGRESS"
+
+while [ "${STATUS}" = "IN_PROGRESS" ]
+do
+    sleep 2s
+
+    STATUS=`aws sso-admin describe-account-assignment-deletion-status \
+        --account-assignment-deletion-request-id "${REQUEST_ID}" \
+        --instance-arn "${INSTANCE_ARN}" \
+        --output text --query="AccountAssignmentDeletionStatus.Status" \
+        --no-cli-pager`
+done
+
+aws sso-admin list-account-assignments-for-principal \
+    --instance-arn "${INSTANCE_ARN}" \
+    --principal-id "${SSO_USER_PRINCIPAL_ID}" \
+    --principal-type "USER" \
+    --no-cli-pager
+
+aws sso-admin delete-permission-set \
+    --permission-set-arn "${PERMISSION_SET_ARN}" \
+    --instance-arn "${INSTANCE_ARN}"
+
+aws iam delete-policy \
+    --policy-arn "${POLICY_ARN_1}"
+
+ROLE_NAME="pipeline-stack-cloudformation-execution-role2"
+POLICY_NAME="POLICY_NAME="pipeline-stack-cloudformation-execution-policy2"
+
+aws iam delete-role-policy \
+    --role-name ${ROLE_NAME} \
+    --policy-name ${POLICY_NAME}
+
+aws iam delete-role \
+    --role-name "${ROLE_NAME}"
+
+aws iam delete-policy \
+    --policy-arn "${POLICY_ARN_2}"
