@@ -52,13 +52,13 @@ Deploy/Delete the pipeline stack with aws cloudformation cli
 
 ```bash
 aws cloudformation deploy \
-    --profile cloudformation-execution-role \
+    --profile cloudformation-deployment \
     --template-file codepipeline-stack.yaml \
     --stack-name sam-helloworld-pipeline \
     --role-arn arn:aws:iam::796973491384:role/pipeline-stack-cloudformation-execution-role
 
 aws cloudformation delete-stack \
-    --profile cloudformation-execution-role \
+    --profile cloudformation-deployment \
     --stack-name sam-helloworld-pipeline
 ```
 
